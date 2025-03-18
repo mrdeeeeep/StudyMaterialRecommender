@@ -43,6 +43,13 @@
                     Articles
                 </a>
             </div>
+
+            <div class="sidebar-footer">
+                <button id="deleteProjectBtn" class="delete-btn" data-project-id="{{ project.id }}">
+                    <span class="material-icons">delete</span>
+                    Delete Project
+                </button>
+            </div>
         </nav>
 
         <main class="main-content">
@@ -68,29 +75,15 @@
 
                 <section id="papers" class="content-section">
                     <h3>Academic Papers</h3>
-                    <div class="content-grid">
-                        <div class="placeholder-card">
-                            <div class="placeholder-text">
-                                <div class="line"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                            </div>
-                        </div>
-                        <!-- Repeat placeholder cards -->
+                    <div class="content-grid papers-grid">
+                        <!-- Content will be loaded dynamically -->
                     </div>
                 </section>
 
                 <section id="books" class="content-section">
                     <h3>Recommended Books</h3>
                     <div class="content-grid">
-                        <div class="placeholder-card">
-                            <div class="placeholder-image book"></div>
-                            <div class="placeholder-text">
-                                <div class="line"></div>
-                                <div class="line"></div>
-                            </div>
-                        </div>
-                        <!-- Repeat placeholder cards -->
+                        <!-- Content will be loaded dynamically -->
                     </div>
                 </section>
 
@@ -122,6 +115,25 @@
                 </section>
             </div>
         </main>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Delete Project</h2>
+                <button class="close-btn">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this project? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn-danger" id="confirmDeleteBtn">Delete Project</button>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/project_details.js') }}"></script>

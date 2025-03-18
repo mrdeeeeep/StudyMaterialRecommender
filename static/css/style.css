@@ -101,6 +101,32 @@ body {
     color: var(--text-secondary);
 }
 
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 2rem;
+}
+
+.delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: var(--error);
+    color: white;
+    transform: translateY(-2px);
+}
+
 /* Main Content Styles */
 .main-content {
     padding: 2rem;
@@ -205,6 +231,11 @@ input:focus, textarea:focus {
     box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
 }
 
+.modal-body {
+    margin: 1.5rem 0;
+    color: var(--text-secondary);
+}
+
 .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -239,6 +270,22 @@ input:focus, textarea:focus {
 
 .btn-secondary:hover {
     background: var(--bg-primary);
+}
+
+.btn-danger {
+    background: var(--error);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
 }
 
 /* Project Details Page */
@@ -346,6 +393,383 @@ input:focus, textarea:focus {
 
 .line:nth-child(3) {
     width: 50%;
+}
+
+/* Video Cards */
+.video-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.video-thumbnail {
+    position: relative;
+    display: block;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
+}
+
+.video-thumbnail .duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.video-info {
+    padding: 1rem;
+}
+
+.video-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+    color: var(--text-primary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.video-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--error);
+}
+
+/* Paper Cards */
+.paper-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+}
+
+.paper-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.paper-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    line-height: 1.4;
+}
+
+.paper-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.paper-link:hover {
+    color: var(--accent);
+}
+
+.paper-meta {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.authors {
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.publisher-year {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.publisher-year .year {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.paper-abstract {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.paper-abstract p {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.paper-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.paper-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.doi-link {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.doi-link:hover {
+    background: var(--bg-primary);
+    color: var(--accent);
+}
+
+.download-link {
+    background: var(--accent);
+    color: white;
+}
+
+.download-link:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.paper-links .material-icons {
+    font-size: 1.2rem;
+}
+
+/* Papers grid specific styles */
+.papers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.content-section#papers {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Books grid specific styles */
+.content-section#books .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+/* Loading and error states */
+.loading, .error {
+    text-align: center;
+    padding: 2rem;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.loading {
+    color: var(--accent);
+}
+
+.error {
+    color: var(--error);
+}
+
+/* Book Cards Styles */
+.book-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.book-cover {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.no-cover .material-icons {
+    font-size: 3rem;
+}
+
+.book-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.book-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    line-height: 1.4;
+}
+
+.book-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.book-link:hover {
+    color: var(--accent);
+}
+
+.book-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.book-meta {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.book-meta .authors {
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.book-description {
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.book-description p {
+    margin: 0;
+}
+
+.book-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.book-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.preview-link {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.preview-link:hover {
+    background: var(--bg-primary);
+    color: var(--accent);
+}
+
+.buy-link {
+    background: var(--accent);
+    color: white;
+}
+
+.buy-link:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.rating {
+    color: gold;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
 }
 
 @keyframes fadeIn {
