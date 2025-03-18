@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.title }} - Study Material Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>Study Material<br>Recommender</h1>
+                <a href="/" class="back-btn">
+                    <span class="material-icons">arrow_back</span>
+                    Back to Projects
+                </a>
+            </div>
+            
+            <div class="section-nav">
+                <a href="#videos" class="section-link active">
+                    <span class="material-icons">play_circle</span>
+                    Videos
+                </a>
+                <a href="#papers" class="section-link">
+                    <span class="material-icons">description</span>
+                    Academic Papers
+                </a>
+                <a href="#books" class="section-link">
+                    <span class="material-icons">menu_book</span>
+                    Books
+                </a>
+                <a href="#github" class="section-link">
+                    <span class="material-icons">code</span>
+                    GitHub Repos
+                </a>
+                <a href="#articles" class="section-link">
+                    <span class="material-icons">article</span>
+                    Articles
+                </a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="project-header">
+                <h2>{{ project.title }}</h2>
+                <p class="project-prompt">{{ project.prompt }}</p>
+            </div>
+
+            <div class="content-sections">
+                <section id="videos" class="content-section active">
+                    <h3>Educational Videos</h3>
+                    <div class="content-grid">
+                        <div class="placeholder-card">
+                            <div class="placeholder-image"></div>
+                            <div class="placeholder-text">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <!-- Repeat placeholder cards -->
+                    </div>
+                </section>
+
+                <section id="papers" class="content-section">
+                    <h3>Academic Papers</h3>
+                    <div class="content-grid">
+                        <div class="placeholder-card">
+                            <div class="placeholder-text">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <!-- Repeat placeholder cards -->
+                    </div>
+                </section>
+
+                <section id="books" class="content-section">
+                    <h3>Recommended Books</h3>
+                    <div class="content-grid">
+                        <div class="placeholder-card">
+                            <div class="placeholder-image book"></div>
+                            <div class="placeholder-text">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <!-- Repeat placeholder cards -->
+                    </div>
+                </section>
+
+                <section id="github" class="content-section">
+                    <h3>GitHub Repositories</h3>
+                    <div class="content-grid">
+                        <div class="placeholder-card">
+                            <div class="placeholder-text">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <!-- Repeat placeholder cards -->
+                    </div>
+                </section>
+
+                <section id="articles" class="content-section">
+                    <h3>Related Articles</h3>
+                    <div class="content-grid">
+                        <div class="placeholder-card">
+                            <div class="placeholder-text">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <!-- Repeat placeholder cards -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/project_details.js') }}"></script>
+</body>
+</html>

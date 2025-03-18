@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Material Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>Study Material<br>Recommender</h1>
+                <button id="newProjectBtn" class="new-project-btn">
+                    <span class="material-icons">add</span>
+                    New Project
+                </button>
+            </div>
+            
+            <div class="projects-list">
+                {% for project in projects %}
+                <a href="{{ url_for('project_details', project_id=project.id) }}" class="project-item">
+                    <span class="material-icons">folder</span>
+                    <div class="project-info">
+                        <h3>{{ project.title }}</h3>
+                        <p>{{ project.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="welcome-section">
+                <h2>Welcome to Study Material Recommender</h2>
+                <p>Create a new project to start discovering learning resources</p>
+                <img src="{{ url_for('static', filename='images/study.svg') }}" alt="Study illustration" class="welcome-image">
+            </div>
+        </main>
+    </div>
+
+    <!-- New Project Modal -->
+    <div id="newProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Project</h2>
+                <button class="close-btn">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="newProjectForm">
+                <div class="form-group">
+                    <label for="projectTitle">Project Title</label>
+                    <input type="text" id="projectTitle" required placeholder="Enter a title for your project">
+                </div>
+                <div class="form-group">
+                    <label for="projectPrompt">Research Prompt</label>
+                    <textarea id="projectPrompt" required rows="4" placeholder="What would you like to learn about?"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
