@@ -44,6 +44,9 @@ class Video(db.Model):
     tags = db.Column(db.Text)
     duration = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    relevance_rating = db.Column(db.Integer, default=5)  # Rating out of 10
+    click_count = db.Column(db.Integer, default=0)  # Track clicks
+    is_visible = db.Column(db.Boolean, default=True)  # Track if content is hidden
 
 class Paper(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,6 +62,9 @@ class Paper(db.Model):
     language = db.Column(db.String(10))
     doi = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    relevance_rating = db.Column(db.Integer, default=5)  # Rating out of 10
+    click_count = db.Column(db.Integer, default=0)  # Track clicks
+    is_visible = db.Column(db.Boolean, default=True)  # Track if content is hidden
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,15 +85,20 @@ class Book(db.Model):
     info_link = db.Column(db.String(500))
     buy_link = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    relevance_rating = db.Column(db.Integer, default=5)  # Rating out of 10
+    click_count = db.Column(db.Integer, default=0)  # Track clicks
+    is_visible = db.Column(db.Boolean, default=True)  # Track if content is hidden
 
 # Delete the existing database file if it exists
 db_file = 'study_materials.db'
 if os.path.exists(db_file):
     os.remove(db_file)
+    print(f"Deleted existing database: {db_file}")
 
 # Create all tables
 with app.app_context():
     db.create_all()
+    print("Database tables created successfully")
 
 def fetch_youtube_videos(search_query):
     try:
@@ -350,19 +361,19 @@ def create_project():
             project_id=new_project.id,
             google_id=book_data['google_id'],
             title=book_data['title'],
-            subtitle=book_data['subtitle'],
-            authors=book_data['authors'],
-            publisher=book_data['publisher'],
-            published_date=book_data['published_date'],
-            description=book_data['description'],
-            page_count=book_data['page_count'],
-            categories=book_data['categories'],
-            average_rating=book_data['average_rating'],
-            ratings_count=book_data['ratings_count'],
-            thumbnail=book_data['thumbnail'],
-            preview_link=book_data['preview_link'],
-            info_link=book_data['info_link'],
-            buy_link=book_data['buy_link']
+            subtitle=book_data.get('subtitle', ''),
+            authors=book_data.get('authors', ''),
+            publisher=book_data.get('publisher', ''),
+            published_date=book_data.get('published_date', ''),
+            description=book_data.get('description', ''),
+            page_count=book_data.get('page_count', 0),
+            categories=book_data.get('categories', ''),
+            average_rating=book_data.get('average_rating', 0.0),
+            ratings_count=book_data.get('ratings_count', 0),
+            thumbnail=book_data.get('thumbnail', ''),
+            preview_link=book_data.get('preview_link', ''),
+            info_link=book_data.get('info_link', ''),
+            buy_link=book_data.get('buy_link', '')
         )
         db.session.add(new_book)
 
@@ -382,111 +393,268 @@ def delete_project(project_id):
     db.session.commit()
     return jsonify({'message': 'Project deleted successfully'})
 
-@app.route('/api/projects/<int:project_id>/videos')
+@app.route('/api/projects/<int:project_id>/videos', methods=['GET'])
 def get_videos(project_id):
     try:
-        videos = Video.query.filter_by(project_id=project_id).all()
-        videos_data = []
+        project = Project.query.get_or_404(project_id)
         
+        # Get videos from database
+        videos = Video.query.filter_by(project_id=project_id).all()
+        
+        if not videos:
+            # If no videos in database, fetch from YouTube API
+            videos_data = fetch_youtube_videos(project.prompt)
+            
+            # Save to database
+            for video_data in videos_data:
+                # Parse the published_at date string
+                published_at = None
+                if 'published_at' in video_data:
+                    try:
+                        published_at = datetime.strptime(video_data['published_at'], '%Y-%m-%dT%H:%M:%SZ')
+                    except ValueError:
+                        pass
+                
+                video = Video(
+                    project_id=project.id,
+                    video_id=video_data['video_id'],
+                    title=video_data['title'],
+                    description=video_data['description'],
+                    thumbnail_url=video_data['thumbnail_url'],
+                    channel_title=video_data['channel_title'],
+                    published_at=published_at,
+                    view_count=video_data['view_count'],
+                    like_count=video_data['like_count'],
+                    category_id=video_data['category_id'],
+                    tags=video_data['tags'],
+                    duration=video_data['duration']
+                )
+                db.session.add(video)
+            
+            db.session.commit()
+            
+            # Get videos again after saving
+            videos = Video.query.filter_by(project_id=project_id).all()
+        
+        # Convert to JSON
+        videos_json = []
         for video in videos:
             video_data = {
+                'id': video.id,
                 'video_id': video.video_id,
                 'title': video.title,
                 'description': video.description,
                 'thumbnail_url': video.thumbnail_url,
                 'channel_title': video.channel_title,
-                'published_at': video.published_at.isoformat(),
+                'published_at': video.published_at.isoformat() if video.published_at else None,
                 'view_count': video.view_count,
                 'like_count': video.like_count,
-                'category_id': video.category_id,
-                'tags': video.tags,
-                'duration': video.duration,
-                'url': f"https://www.youtube.com/watch?v={video.video_id}"
+                'url': f"https://www.youtube.com/watch?v={video.video_id}",
+                'relevance_rating': video.relevance_rating,
+                'click_count': video.click_count
             }
-            videos_data.append(video_data)
-            
-        return jsonify(videos_data)
-
+            videos_json.append(video_data)
+        
+        return jsonify(videos_json)
+    
     except Exception as e:
+        logging.error(f"Error fetching videos from database: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/projects/<int:project_id>/papers')
+@app.route('/api/projects/<int:project_id>/papers', methods=['GET'])
 def get_papers(project_id):
     try:
-        logging.info(f"Fetching papers for project ID: {project_id}")
+        project = Project.query.get_or_404(project_id)
+        
+        # Get papers from database
         papers = Paper.query.filter_by(project_id=project_id).all()
-        logging.info(f"Found {len(papers)} papers in database for project {project_id}")
         
-        papers_data = []
-        
-        for paper in papers:
-            try:
-                # Convert authors string to list if it contains commas
-                authors_list = paper.authors.split(',') if paper.authors and ',' in paper.authors else [paper.authors] if paper.authors else []
-                
-                paper_data = {
-                    'core_id': paper.core_id,
-                    'title': paper.title,
-                    'abstract': paper.abstract,
-                    'authors': authors_list,
-                    'download_url': paper.download_url,
-                    'pdf_url': paper.pdf_url,
-                    'publisher': paper.publisher,
-                    'year': paper.year,
-                    'language': paper.language,
-                    'doi': paper.doi
-                }
-                papers_data.append(paper_data)
-                logging.info(f"Retrieved paper: {paper_data['title']}")
-            except Exception as e:
-                logging.error(f"Error processing paper {paper.id}: {str(e)}")
+        if not papers:
+            # If no papers in database, fetch from CORE API
+            papers_data = fetch_core_papers(project.prompt)
             
-        logging.info(f"Total papers found: {len(papers_data)}")
-        return jsonify(papers_data)
-
+            # Save to database
+            for paper_data in papers_data:
+                paper = Paper(
+                    project_id=project.id,
+                    core_id=paper_data['core_id'],
+                    title=paper_data['title'],
+                    abstract=paper_data['abstract'],
+                    authors=paper_data['authors'],
+                    download_url=paper_data['download_url'],
+                    pdf_url=paper_data['pdf_url'],
+                    publisher=paper_data['publisher'],
+                    year=paper_data['year'],
+                    language=paper_data['language'],
+                    doi=paper_data['doi']
+                )
+                db.session.add(paper)
+            
+            db.session.commit()
+            
+            # Get papers again after saving
+            papers = Paper.query.filter_by(project_id=project_id).all()
+        
+        # Convert to JSON
+        papers_json = []
+        for paper in papers:
+            paper_data = {
+                'id': paper.id,
+                'core_id': paper.core_id,
+                'title': paper.title,
+                'abstract': paper.abstract,
+                'authors': paper.authors,
+                'download_url': paper.download_url,
+                'pdf_url': paper.pdf_url,
+                'publisher': paper.publisher,
+                'year': paper.year,
+                'doi': paper.doi,
+                'relevance_rating': paper.relevance_rating,
+                'click_count': paper.click_count
+            }
+            papers_json.append(paper_data)
+        
+        return jsonify(papers_json)
+    
     except Exception as e:
         logging.error(f"Error fetching papers from database: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/projects/<int:project_id>/books')
+@app.route('/api/projects/<int:project_id>/books', methods=['GET'])
 def get_books(project_id):
     try:
-        logging.info(f"Fetching books for project ID: {project_id}")
+        project = Project.query.get_or_404(project_id)
+        
+        # Get books from database
         books = Book.query.filter_by(project_id=project_id).all()
-        logging.info(f"Found {len(books)} books in database for project {project_id}")
         
-        books_data = []
-        
-        for book in books:
-            try:
-                book_data = {
-                    'google_id': book.google_id,
-                    'title': book.title,
-                    'subtitle': book.subtitle,
-                    'authors': book.authors,
-                    'publisher': book.publisher,
-                    'published_date': book.published_date,
-                    'description': book.description,
-                    'page_count': book.page_count,
-                    'categories': book.categories,
-                    'average_rating': book.average_rating,
-                    'ratings_count': book.ratings_count,
-                    'thumbnail': book.thumbnail,
-                    'preview_link': book.preview_link,
-                    'info_link': book.info_link,
-                    'buy_link': book.buy_link
-                }
-                books_data.append(book_data)
-                logging.info(f"Retrieved book: {book_data['title']}")
-            except Exception as e:
-                logging.error(f"Error processing book {book.id}: {str(e)}")
+        if not books:
+            # If no books in database, fetch from Google Books API
+            books_data = fetch_google_books(project.prompt)
             
-        logging.info(f"Total books found: {len(books_data)}")
-        return jsonify(books_data)
-
+            # Save to database
+            for book_data in books_data:
+                book = Book(
+                    project_id=project.id,
+                    google_id=book_data['google_id'],
+                    title=book_data['title'],
+                    subtitle=book_data.get('subtitle', ''),
+                    authors=book_data.get('authors', ''),
+                    publisher=book_data.get('publisher', ''),
+                    published_date=book_data.get('published_date', ''),
+                    description=book_data.get('description', ''),
+                    page_count=book_data.get('page_count', 0),
+                    categories=book_data.get('categories', ''),
+                    average_rating=book_data.get('average_rating', 0.0),
+                    ratings_count=book_data.get('ratings_count', 0),
+                    thumbnail=book_data.get('thumbnail', ''),
+                    preview_link=book_data.get('preview_link', ''),
+                    info_link=book_data.get('info_link', ''),
+                    buy_link=book_data.get('buy_link', '')
+                )
+                db.session.add(book)
+            
+            db.session.commit()
+            
+            # Get books again after saving
+            books = Book.query.filter_by(project_id=project_id).all()
+        
+        # Convert to JSON
+        books_json = []
+        for book in books:
+            book_data = {
+                'id': book.id,
+                'google_id': book.google_id,
+                'title': book.title,
+                'subtitle': book.subtitle,
+                'authors': book.authors,
+                'publisher': book.publisher,
+                'published_date': book.published_date,
+                'description': book.description,
+                'page_count': book.page_count,
+                'categories': book.categories,
+                'average_rating': book.average_rating,
+                'ratings_count': book.ratings_count,
+                'thumbnail': book.thumbnail,
+                'preview_link': book.preview_link,
+                'info_link': book.info_link,
+                'buy_link': book.buy_link,
+                'relevance_rating': book.relevance_rating,
+                'click_count': book.click_count
+            }
+            books_json.append(book_data)
+        
+        return jsonify(books_json)
+    
     except Exception as e:
         logging.error(f"Error fetching books from database: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/videos/<int:video_id>/click', methods=['POST'])
+def track_video_click(video_id):
+    video = Video.query.get_or_404(video_id)
+    video.click_count += 1
+    db.session.commit()
+    return jsonify({'success': True, 'click_count': video.click_count})
+
+@app.route('/api/videos/<int:video_id>/rate', methods=['POST'])
+def rate_video(video_id):
+    video = Video.query.get_or_404(video_id)
+    data = request.get_json()
+    video.relevance_rating = data.get('rating', 5)
+    db.session.commit()
+    return jsonify({'success': True, 'rating': video.relevance_rating})
+
+@app.route('/api/videos/<int:video_id>/hide', methods=['POST'])
+def hide_video(video_id):
+    video = Video.query.get_or_404(video_id)
+    db.session.delete(video)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/papers/<int:paper_id>/click', methods=['POST'])
+def track_paper_click(paper_id):
+    paper = Paper.query.get_or_404(paper_id)
+    paper.click_count += 1
+    db.session.commit()
+    return jsonify({'success': True, 'click_count': paper.click_count})
+
+@app.route('/api/papers/<int:paper_id>/rate', methods=['POST'])
+def rate_paper(paper_id):
+    paper = Paper.query.get_or_404(paper_id)
+    data = request.get_json()
+    paper.relevance_rating = data.get('rating', 5)
+    db.session.commit()
+    return jsonify({'success': True, 'rating': paper.relevance_rating})
+
+@app.route('/api/papers/<int:paper_id>/hide', methods=['POST'])
+def hide_paper(paper_id):
+    paper = Paper.query.get_or_404(paper_id)
+    db.session.delete(paper)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/books/<int:book_id>/click', methods=['POST'])
+def track_book_click(book_id):
+    book = Book.query.get_or_404(book_id)
+    book.click_count += 1
+    db.session.commit()
+    return jsonify({'success': True, 'click_count': book.click_count})
+
+@app.route('/api/books/<int:book_id>/rate', methods=['POST'])
+def rate_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    data = request.get_json()
+    book.relevance_rating = data.get('rating', 5)
+    db.session.commit()
+    return jsonify({'success': True, 'rating': book.relevance_rating})
+
+@app.route('/api/books/<int:book_id>/hide', methods=['POST'])
+def hide_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

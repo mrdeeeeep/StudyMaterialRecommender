@@ -350,6 +350,16 @@ input:focus, textarea:focus {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1.5rem;
+    padding: 1rem 0;
+    position: relative;
+}
+
+.content-grid > .content-card {
+    margin-top: 45px;
+}
+
+.content-grid > .card-wrapper {
+    margin-top: 30px;
 }
 
 .placeholder-card {
@@ -686,7 +696,7 @@ input:focus, textarea:focus {
 .book-title {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 0.5rem;
+    margin-bottom: 0.5rem;
     line-height: 1.4;
 }
 
@@ -770,6 +780,282 @@ input:focus, textarea:focus {
     color: gold;
     margin-top: 0.25rem;
     font-size: 0.8rem;
+}
+
+/* Book card specific styles */
+.book-card {
+    max-height: 450px;
+}
+
+.book-card .card-thumbnail {
+    height: 140px;
+}
+
+.book-card .card-text {
+    max-height: 60px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+.book-card .card-body {
+    padding: 0.75rem;
+}
+
+.book-card .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.book-card .card-subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.book-card .card-footer {
+    padding: 0.4rem 0.75rem;
+}
+
+/* Content Card Styles */
+.content-card {
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-thumbnail {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: var(--bg-secondary);
+}
+
+.card-body {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--accent);
+    transition: background 0.3s ease;
+}
+
+.card-link:hover {
+    background: rgba(124, 77, 255, 0.1);
+}
+
+/* Card Wrapper */
+.card-wrapper {
+    position: relative;
+    margin-top: 30px;
+}
+
+/* Rating Controls */
+.rating-controls {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 12px;
+    padding: 8px;
+    display: none;
+    justify-content: center;
+    gap: 4px;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.card-wrapper:hover .rating-controls {
+    display: flex;
+}
+
+/* Relevance Rating Styles */
+.relevance-rating {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+}
+
+.relevance-rating .material-icons {
+    font-size: 14px;
+    color: var(--accent);
+}
+
+/* Click Count Styles */
+.click-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.click-count .material-icons {
+    font-size: 14px;
+}
+
+/* Dislike Button Styles */
+.dislike-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dislike-btn:hover {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--error);
+}
+
+.dislike-btn .material-icons {
+    font-size: 18px;
+}
+
+/* Rating Controls */
+.rating-controls {
+    position: absolute;
+    top: -45px;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 12px;
+    padding: 8px;
+    display: none;
+    justify-content: center;
+    gap: 4px;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.content-card:hover .rating-controls {
+    display: flex;
+}
+
+.rating-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.rating-btn:hover, .rating-btn.active {
+    background: var(--accent);
+    color: white;
+}
+
+.rating-btn .material-icons {
+    font-size: 16px;
+}
+
+/* Animation for removed content */
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.8); }
+}
+
+.content-card.removing {
+    animation: fadeOut 0.5s ease forwards;
+    pointer-events: none;
 }
 
 @keyframes fadeIn {
